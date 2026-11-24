@@ -1,0 +1,11 @@
+# AEGIS · pose, discharge and failure
+
+**OBSERVED.** TurretMachine advances one state machine: deployment → idle → acquisition → charge → fire → recovery. On a combat death, critical meltdown takes over even though the Skeleton damage receiver is gone. ReactorModel creates up to 31 body parts. Fixed foundation and four struts support a yaw chassis, a pitched cradle, sliding tubes, optic brackets and vents. The Part record stores rest center, scale, angle, mount family and display. pose rebuilds the geometry; place handles the unit-cube corner. All visual entities originate at the base and translate locally.
+
+The tracker slews by bounded angular increments. The final part of the nine-tick charge holds aim. muzzle() extends the nominal deployed bore from the pitch pivot. This is a pre-recoil firing socket; barrel retraction is a later animation. CannonBeam checks cover across the square section and fire() resolves intersections once. ReactorModel.discharge uses two-block red glass segments with a truncated final segment and two continuous core layers. ReactorEffects.arcs samples a phase-changing path in the shot's R/U plane. The charge guide is a thin ray. Impact cues follow successful damage events.
+
+During failure, the barrel droops, vent output rises, alarm intervals shorten and a ground ring communicates reach. Overload particles travel inward from the muzzle. The central element contracts and changes material late in the countdown. At tick 40 the machine emits a spherical particle front and mechanical sounds; four existing foot plates are reused as spinning debris, then removed. The loaded-chunk countdown and teardown are owned by the machine, not the last attacker. Chunk suspension or shutdown can retire a terminal assembly early.
+
+**GENERALIZED.** For an automated cannon, industrial press or mechanical boss, freeze the triggering pose, endpoint and release time into an event snapshot. Render anticipation before commitment, release from that socket, then let moving parts recover. Give terminal effects a short independent lifetime.
+
+**RECOMMENDED.** If a broad warning must exactly communicate safe cover, project the same clipped volume used at discharge. Keep this snapshot independent of optional display allocation; losing a shell to a visual budget cannot change a resolved game event.

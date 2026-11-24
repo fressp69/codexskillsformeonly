@@ -1,0 +1,9 @@
+# Sample the action, interpolate the pose
+
+**OBSERVED.** The turret stores the tick when it entered each state. Its aiming controller bounds yaw/pitch steps and stops tracking late in the charge. Recovery starts after the beam lifetime. The glider deploys with 1−(1−u)³, filters the shortest heading difference and damps flex with a stored spring velocity. Sensor brackets unfold over six controller updates on a two-tick scheduler: six updates are twelve nominal ticks.
+
+**GENERALIZED.** Define u = clamp((now−entered)/duration,0,1). Ease by u²(3−2u) for rest at both ends. Drive recoil with a quick backward stroke followed by a slower return. Evaluate poses from rest at u; replaying a fractional rotation into an already animated transform creates drift. For yaw use atan2(sin Δ,cos Δ); for quaternions use shortest-path slerp between normalized endpoints. Sample continuous spin before the orientation difference reaches π or a shortest-path client can appear to reverse it.
+
+Keep three clocks explicit: game ticks for authoritative phases, wall time for offline expiry when that policy is desired, and client interpolation for presentation. Send a transform with interpolation delay reset to zero and duration near the sample interval. Entity teleport interpolation controls anchor movement separately. Avoid sending unchanged static transforms. On teleport, world change or a large discontinuity, reseed the pose and trail history. A client may never render an intermediate frame.
+
+**RECOMMENDED.** Store one-shot cues on state entry or dispatch crossed time markers (previousAge < marker ≤ currentAge). This prevents repeated alarms or missed latches with coarse updates. If jobs can outlive an assembly, bind callbacks to its generation ID. For variable intervals use a smoothing coefficient 1−exp(−Δt/τ) or substep a spring with a bounded timestep. Keep collision and permissions independent of animation completion.

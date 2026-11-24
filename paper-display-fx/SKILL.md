@@ -1,26 +1,24 @@
 ---
 name: paper-display-fx
-description: Design and implement animated Minecraft Paper BlockDisplay models, procedural particles, and spatial vanilla sound cues for gadgets, machines, structures, and rituals.
+description: Design and implement animated Minecraft Paper BlockDisplay models, procedural particles and spatial vanilla sound cues for gadgets, machines, structures and rituals.
 ---
 
 # Paper display animation and effects
 
-Start with what a nearby player needs to recognize. Pick a silhouette, a structural material, and an energy accent. Give moving parts a visible reason to move. Read the project's display helpers, effect budgets, gameplay clock, and target Paper version before choosing APIs. In SkillsSMP, start with MechanicalArt and FxService.
+Start from the action a player should recognize at a distance. Keep its silhouette readable with particles off. Inspect the project's gameplay clock, display helpers, target API and viewer preferences before choosing parts or effects. Load the linked reference for the decision at hand.
 
-## Pose the assembly
+| Phase | Working decision |
+|---|---|
+| A · Visual brief | Name the first readable shape, the moving feature that explains its purpose, the material carrying its weight and the accent that signals activity. |
+| B · Decompose | Sketch fixed parts, joints, sliders, emitters and interaction points. Budget independent motion before subdividing decorative surfaces. See [articulated models](references/articulated-models.md). |
+| C · Transforms | Declare axes and anchor, then compose from the rest pose. Use [coordinate systems](references/coordinate-systems.md) for mounts and [display transforms](references/blockdisplay-transformations.md) for centered cubes and hinges. |
+| D · States | Give each transition a trigger, age, permitted interruption and exit. Drive poses and one-shot cues from the authoritative action. See [interpolation](references/animation-interpolation.md). |
+| E · Effects | Choose a [procedural path](references/procedural-geometry.md), [particle envelope](references/particle-systems.md) and [spatial sound score](references/sound-design.md). For thick directed effects, share the [resolved volume](references/volumetric-vfx.md) with gameplay. |
+| F · Implement | Keep model definitions, mutable assembly state and game decisions distinct. Spawn reusable parts once. Transform attachment points through the same parents as the parts they follow. |
+| G · Budget | Assign an owner, update cadence, viewer policy and teardown to each entity and effect. See [performance and lifecycle](references/performance-and-lifecycle.md). |
+| H · Validate | Check basis axes, pivots, timing, interruption, simultaneous devices and empty audiences. Use the [validation guide](references/testing-and-validation.md). |
+| I · Deliver | When implementing, provide complete relevant sources, actual build results, observed behavior and checks that still require a client. Keep changes within the requested visual or gameplay scope. |
 
-- Sketch a pivot hierarchy in model space. For a turret, the base owns yaw, the cradle adds pitch, and the barrel recoils along its local bore. For paired wings, mirror the hinge locations and fold directions. Store a rest pose per part and compose each update from it to prevent drift.
-- Choose one forward axis. A unit BlockDisplay starts at a corner. For desired center `c`, rotation `R`, and dimensions `s`, use `translation = c - R(s / 2)` with identity right rotation. For a beam, put the center halfway between its endpoints and scale its forward dimension to their distance. Guard zero-length segments.
-- Spawn parts once. Interpolate moving transforms between server samples, reset interpolation delay on each new target pose, and leave fixed parts alone. Derive emitters, trails, and interaction cues from the same transformed attachment points. Displays provide visuals; use the project's actual hitboxes and collision results for gameplay.
+Choose one source pattern when applicable: [turret](patterns/aegis-turret.md), [glider](patterns/mechanical-glider.md), [wire containment](patterns/nanowire-containment.md), [sensor](patterns/sonic-sensor.md), or [propulsion](patterns/propulsion-effects.md). Original worked designs cover a [survey sentry](examples/articulated-sentry.md), [folding wings](examples/animated-mechanical-wings.md), and [energy structure](examples/procedural-energy-structure.md).
 
-## Score the action
-
-- Tie visual and sound cues to elapsed ticks in the existing action. At rest, use sparse motion and quiet accents. Build anticipation with a readable change in pose, color, or pitch. Put the strongest flash and transient at the moment of contact, then show recoil, cooling, or dissipation. Fire one-shot cues on state entry.
-- Give particles a path. Move a pulse down a conduit, sample a ring around a pivot, or emit paired trails from wing tips. Build the shape in local coordinates and rotate it with the model. For directional effects, use the resolved endpoint and clip the visible effect to cover when gameplay does.
-- Place sounds at their physical source. A latch clicks at its hinge, a charge rises at the core, and the impact sounds where it lands. Reserve low-frequency weight for major beats. Audition overlapping devices for loudness and repetition. Verify sound keys and particle data types against the target API.
-
-## Budget and finish
-
-Keep world and entity updates on the appropriate server thread. Reduce particle samples and pose updates with distance. Preserve essential silhouettes and gameplay timing for players with cosmetic effects disabled. Give each assembly ownership of its parts, temporary effects, and cleanup. Release them on completion, interruption, chunk unload, and disable. Rebuild persistent assemblies from authoritative state.
-
-Compile against the project's actual Paper dependency. For an in-game review, inspect the silhouette from above and at eye level, watch diagonal and vertical movement, listen through a complete cycle, and check cleanup after interruption. Report which checks were performed.
+[Source evidence](methodology.md) · [Installation](installation.md) · [Package validation](validation-report.md)

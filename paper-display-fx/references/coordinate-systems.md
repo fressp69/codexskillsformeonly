@@ -1,0 +1,9 @@
+# Choose a frame and test its axes
+
+**GENERALIZED.** Separate world position O (double precision), local joint positions (small offsets in blocks) and vectors (directions or velocities). Transform points as O + Qp, vectors as Qv. Subtract world positions before conversion to JOML floats to preserve detail far from spawn. Decide which entity rotation is already applied by the client. A rotating entity anchor plus the same rotation in the display transform doubles the turn.
+
+Use local +Z forward, +Y up, +X transverse. Here yaw a turns +Z toward +X; elevation b raises the nose. In radians, Q = Ry(a) Rx(−b), forward = (sin a cos b, sin b, cos a cos b), right = (cos a,0,−sin a), up = forward × right. To aim use atan2(dx,dz) and atan2(dy,hypot(dx,dz)). At vertical retain the previous yaw. Neutral forward is south in world coordinates. Bukkit player yaw increases toward −X and positive look pitch looks down; convert signs at the boundary. Roll rotates around local +Z after yaw and pitch.
+
+**OBSERVED.** CannonBeam uses this yaw/elevation basis. MechanicalGlider.mounted rotates an offset, adds player position, then zeroes the returned Location's yaw and pitch. Its native flight pose adds a body-pitch correction. SoundSensorController uses atan2(nx,nz) for its four horizontal mounting normals. Its lateral detection vector has opposite sign to the right axis above; absolute lateral distance and a closed ring are invariant to that choice.
+
+**RECOMMENDED.** For an arbitrary surface normal F, pick a reference U least aligned with F, normalize R = U × F and derive V = F × R. For a moving mount project last frame's right axis onto the new normal plane to preserve roll continuity. A zero-length direction has no orientation: retain the prior frame or hide the segment. Inspect a local forward marker facing south, east, up and straight back before adding materials.
