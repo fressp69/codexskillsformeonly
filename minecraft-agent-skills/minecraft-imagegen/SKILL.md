@@ -21,6 +21,7 @@ server brand asset.
 
 - Read [prompt patterns](references/prompt-patterns.md) for an underspecified request or a generation/edit prompt template.
 - Read [asset recipes](references/asset-recipes.md) for a pack icon, release banner, server header, or texture concept sheet.
+- For pixel-art item assets, follow [pixel resolution and nearest-neighbor scaling](references/pixel-resolution-and-scaling.md) to produce a native-size texture and crisp enlarged preview without blur.
 - Use `scripts/scaffold-asset-brief.sh` only when a saved brief is useful for stakeholder feedback or repeated rounds; a clear image request can proceed directly.
 - Invoke the helper by its absolute installed path from the project workspace. Relative `--out` values resolve from that workspace. When running from the installed skill directory, pass an absolute `--out` project path or set `CODEX_WORKSPACE_ROOT`.
 
@@ -53,8 +54,9 @@ server brand asset.
 
 1. Use the request to identify the asset type, target dimensions, output path, and whether this is a generation or edit. Inspect the existing image for an edit; gather style references only when needed.
 2. Generate the requested asset using the available tool. Describe the subject, composition, Minecraft style, and constraints. For an edit, state the change and what must remain unchanged.
-3. Inspect the result at its intended display size. Correct observed defects with focused edits; do not require additional rounds when the result meets the request.
-4. Save or return the requested result and verify any saved path. Complete pixel cleanup, tiling, and pack references when integration is in scope. Additional skills are optional.
+3. For a Minecraft item or other pixel-art texture, resize the generated art to the user's preferred **native resolution** (commonly 16×16, 32×32, or 64×64; for custom item icons with no stated preference, default to 32×32). Use **nearest-neighbor resampling**, never bilinear/bicubic smoothing, for this pixel-texture workflow. Preserve an existing alpha channel, center/contain the entire sprite, and inspect the actual native-size pixels. See [pixel resolution and scaling](references/pixel-resolution-and-scaling.md). This is not a general resizing rule for photographs, banners, or painterly artwork.
+4. Inspect the result at the intended display size. Correct lost details, jagged silhouette breaks, stray pixels or unwanted edge halos. Nearest-neighbor keeps hard boundaries but cannot restore detail lost when shrinking or fix an already anti-aliased source.
+5. Save or return the native-resolution PNG and, when useful, a separate **nearest-neighbor enlarged preview** (e.g. 32×32 → 512×512). Verify the actual file dimensions and alpha channel; do not mistake a preview for the texture. Complete pixel cleanup, tiling, and pack references when integration is in scope. Additional skills are optional.
 
 ---
 
@@ -89,6 +91,7 @@ server brand asset.
 ## Review Checklist
 
 - The image reads clearly at the actual target size.
+- For pixel-art textures, native PNG dimensions are confirmed; nearest-neighbor was used for resizing and previews, and existing transparency was preserved.
 - Any text is spelled correctly and positioned as requested.
 - No extra logos, watermarks, or unrelated objects were introduced.
 - The style matches the requested Minecraft context.

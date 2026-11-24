@@ -63,6 +63,18 @@ Recipe:
 2. Ask for material qualities, not scene storytelling.
 3. When pack integration is in scope, complete the pixel cleanup, tiling, and file references; otherwise deliver the concept as requested.
 
+### Pixel-art item textures (e.g. Jet Fuel)
+
+If the user wants an actual inventory item sprite rather than a concept sheet:
+
+1. Choose the user's requested native dimensions; otherwise favor 32×32 for a custom Minecraft item (16×16 for vanilla-style simplicity, 64×64 if extra detail is justified).
+2. Preserve the full item silhouette and existing transparency; make the sprite square or fit it within a transparent square canvas without cropping.
+3. Resample to native dimensions using **nearest neighbor**, then inspect the image at 100% and an enlarged nearest-neighbor preview. Do not use bilinear or bicubic scaling for this pixel-art workflow.
+4. Repair missing details, single-pixel artifacts and edge halos where needed. Resizing alone does not guarantee clean, production-ready pixel art.
+5. Deliver a native-size PNG (e.g. `jet_fuel_32x32.png`) plus an optional enlarged preview (e.g. `jet_fuel_32x32_preview.png`). Verify both actual dimensions, and describe the preview as non-game-use.
+
+See [pixel resolution and scaling](pixel-resolution-and-scaling.md) for a reproducible Pillow workflow.
+
 ## Server Banner or Header
 
 Recipe:
