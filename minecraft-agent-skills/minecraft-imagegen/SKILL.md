@@ -31,7 +31,7 @@ server brand asset.
 
 - If the current host does not expose built-in image generation or an equivalent image-editing tool, stop and tell the user this skill is unavailable on that host; offer prompt/brief preparation or a host with an available image-generation tool.
 - Use the built-in `image_gen` tool by default when the host supports it.
-- Match the requested deliverable: complete a requested asset, or produce concepts when the user asks for exploration. Do not require a separate concept approval for a clear generation or edit request.
+- For Minecraft pixel-art textures, use the staged concept → user review → native downscale → dual-output workflow below by default. A direct request to downscale an existing approved image already satisfies concept review; an explicit request to skip review or deliver the finished texture immediately also authorizes proceeding. For other raster assets, match the requested deliverable without imposing a separate concept approval.
 - The built-in image generation workflow supports fresh generations and edits against existing local/reference images; prefer that over describing a manual paint-over process.
 - Save a requested project asset at the intended workspace path when the host exposes the output file; otherwise return the generated image and state that a local save could not be verified.
 - Preserve existing assets non-destructively by using versioned filenames unless the user explicitly asked to overwrite.
@@ -54,9 +54,20 @@ server brand asset.
 
 1. Use the request to identify the asset type, target dimensions, output path, and whether this is a generation or edit. Inspect the existing image for an edit; gather style references only when needed.
 2. Generate the requested asset using the available tool. Describe the subject, composition, Minecraft style, and constraints. For an edit, state the change and what must remain unchanged.
-3. For a Minecraft item or other pixel-art texture, resize the generated art to the user's preferred **native resolution** (commonly 16×16, 32×32, or 64×64; for custom item icons with no stated preference, default to 32×32). Use **nearest-neighbor resampling**, never bilinear/bicubic smoothing, for this pixel-texture workflow. Preserve an existing alpha channel, center/contain the entire sprite, and inspect the actual native-size pixels. See [pixel resolution and scaling](references/pixel-resolution-and-scaling.md). This is not a general resizing rule for photographs, banners, or painterly artwork.
-4. Inspect the result at the intended display size. Correct lost details, jagged silhouette breaks, stray pixels or unwanted edge halos. Nearest-neighbor keeps hard boundaries but cannot restore detail lost when shrinking or fix an already anti-aliased source.
-5. Save or return the native-resolution PNG and, when useful, a separate **nearest-neighbor enlarged preview** (e.g. 32×32 → 512×512). Verify the actual file dimensions and alpha channel; do not mistake a preview for the texture. Complete pixel cleanup, tiling, and pack references when integration is in scope. Additional skills are optional.
+3. For Minecraft pixel-art textures, follow the mandatory staged workflow below and the [pixel resolution and scaling guide](references/pixel-resolution-and-scaling.md). For other assets, inspect and deliver at the requested dimensions.
+4. Keep resource-pack integration separate from art approval. Only write pack assets/model references when integration is explicitly requested or already authorized by the task. Use `minecraft-resource-pack` for that implementation.
+
+### Required Minecraft pixel-art texture workflow
+
+**Generate concept → user review → nearest-neighbor downscale → deliver native PNG + 512×512 preview.**
+
+1. **Concept art:** Ask image generation for a high-resolution rendering (e.g. 1024×1024, or the available tool's square output size) that visually resembles a genuine 32×32 pixel-art sprite by default. Adapt the apparent pixel grid to 16×16 or 64×64 if the intended native style calls for it. Use a single isolated item, readable silhouette, deliberate square pixels, limited palette, hard stepped edges, no smoothing, no scene, no text, and real transparency where appropriate. The concept's file resolution is not its apparent pixel grid.
+2. **Review:** Show the concept first. Wait for the user's approval or requested edits before downscaling. Preserve approved details across revisions; regenerate only when an actual visual change is requested. A user-provided final sprite or explicit downscale request is already approval to process that source. Do not silently insert a concept into a pack. An explicit all-in-one final-delivery request can bypass the separate review turn.
+3. **Native conversion:** Work from the exact approved source file, not a fresh generation or screenshot. Choose 16×16, 32×32 (default custom item), or 64×64 according to the user's target; honor other explicitly requested dimensions. Contain the complete sprite proportionally on a square canvas, preserve genuine alpha, then downscale with nearest neighbor only. Do not silently recolor, mirror, repaint or alter approved pixels. Flag defects and request approval for substantive art changes.
+4. **Inspect and verify:** Check the native icon at inventory scale and at magnification. Verify the actual saved dimensions, transparency if needed, silhouette and edge readability. If small details disappear, return to review rather than silently changing the design. A pixelated-looking high-resolution image is never proof of native dimensions.
+5. **Dual output:** Always deliver both the actual native-size lossless PNG and a separate **exactly 512×512 PNG preview**, enlarged directly from the finished native PNG using nearest neighbor (32×, 16×, or 8× for 16, 32, or 64 pixels). Label each clearly; provide usable file links if supported. Never regenerate or smooth the preview, never use it as the game texture, and never claim a file was saved or verified without inspecting it. If the host cannot access the generated source or write files, report the limitation rather than inventing a handoff.
+
+This workflow is for pixel-art textures, not photographs, banners, or painterly artwork.
 
 ---
 
@@ -91,7 +102,7 @@ server brand asset.
 ## Review Checklist
 
 - The image reads clearly at the actual target size.
-- For pixel-art textures, native PNG dimensions are confirmed; nearest-neighbor was used for resizing and previews, and existing transparency was preserved.
+- For pixel-art textures, concept approval (or an explicit bypass) is established; the actual native PNG and exact 512×512 nearest-neighbor preview are both verified and delivered, and existing transparency is preserved.
 - Any text is spelled correctly and positioned as requested.
 - No extra logos, watermarks, or unrelated objects were introduced.
 - The style matches the requested Minecraft context.
