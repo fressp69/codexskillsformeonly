@@ -74,6 +74,23 @@ Make it easy to simplify into a small Minecraft texture later.
 Style direction: <vanilla-faithful | noisy industrial | magical crystal | etc.>.
 ```
 
+## Pixel-art item concept pattern
+
+Use this for the concept stage of the staged Minecraft texture workflow. The visual grid is not the output file dimensions.
+
+```text
+Create one isolated Minecraft inventory item sprite: <subject>.
+Render at a supported high square resolution, visually emulating a true <32x32 by default, or 16x16/64x64> pixel grid.
+Silhouette: <shape, facing direction, handle angle, blade/head proportions>.
+Palette: <limited palette and material cues>.
+Use intentional square pixel clusters, stepped edges, simple shading and a readable silhouette.
+No anti-aliasing, smooth gradients, text, scene, shadows outside the sprite or extra objects.
+Transparent background where supported; keep the complete sprite inside the canvas.
+Keep unchanged during revisions: <approved details or pixel-locked source assets>.
+```
+
+Show this concept for review. Do not describe it as a native 32×32 file merely because it looks pixelated. Once approved, use deterministic nearest-neighbor scaling, not image generation, to produce the actual native PNG and exact 512×512 preview. For pixel-locked assets supplied by the user, preserve their pixels rather than asking a generator to recreate them.
+
 ## Release Banner Pattern
 
 Use when the output needs copy-safe negative space for titles or release text.
